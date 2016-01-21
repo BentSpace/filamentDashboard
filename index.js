@@ -16,7 +16,7 @@ var TAPS_IN_OPERATION_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/1747
 var REVENUE_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-3b1f628f-5756-40b2-8564-e5a0410691d6";
 
 // Main Code
-updateFirebase(25, 5, 10, 15, 1000000);
+//updateFirebase(25, 5, 10, 15, 1000000);
 listenForChangeInFirebaseMetric(UNIQUE_NEW_LEADS);
 listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
 listenForChangeInFirebaseMetric(TAP_BOOKINGS);
