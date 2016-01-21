@@ -53,7 +53,7 @@ function listenForChangeInFirebaseMetric(metric) {
     var objectForGecko;
     var postURL;
 
-    console.log(newMetricValue);
+    console.log(metric + ": " + newMetricValue);
 
     metricLabelAndURL = findMetricLabelAndURL(metric);
     metricLabel = metricLabelAndURL[0];
@@ -94,13 +94,21 @@ function findMetricLabelAndURL (metric) {
 
 function createGeckoObject (newMetricValue, metricLabel) {
   var objectForGecko
+  var prefix;
+
+  // Add $ prefix for Revenue
+  if (metricLabel === "Revenue") {
+    prefix = "$";
+  }
+
   return objectForGecko = {
                             "api_key": GECKO_API_KEY,
                             "data": {
                               "item": [
                                 {
                                   "value": newMetricValue,
-                                  "text": metricLabel
+                                  "text": metricLabel,
+                                  "prefix": prefix
                                 }
                               ]
                             }
@@ -119,7 +127,7 @@ function postToGecko (objectForGecko, postURL) {
     { json: objectForGecko },
     function responseToPost (error, response, body) {
         if (!error && response.statusCode == 200) {
-            console.log(body)
+            console.log("POST to Gecko: ", body);
         }
     }
   );
