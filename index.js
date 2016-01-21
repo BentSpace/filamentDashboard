@@ -1,5 +1,5 @@
 var Firebase = require("firebase");
-var request = require('request');
+var request = require("request");
 var myFirebaseRef = new Firebase("https://amber-inferno-3722.firebaseio.com/");
 
 // Global Constants
