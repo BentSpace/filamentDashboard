@@ -4,6 +4,7 @@
   "description": "A filament Metrics dashboard built on Geckoboard, using data taken from Firebase",
   "main": "index.js",
   "scripts": {
+    "start" : "node index.js", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
