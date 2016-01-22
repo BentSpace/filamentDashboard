@@ -18,7 +18,7 @@ var REVENUE_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-3b1f628
 
 // Main Code
 //updateFirebase(25, 5, 10, 15, 1000000);
-http.createServer(function (request, response) {}).listen(process.env.PORT);
+//http.createServer(function (request, response) {}).listen(process.env.PORT);
 listenForChangeInFirebaseMetric(UNIQUE_NEW_LEADS);
 listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
 listenForChangeInFirebaseMetric(TAP_BOOKINGS);
