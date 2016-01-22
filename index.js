@@ -1,3 +1,4 @@
+var http = require("http");
 var Firebase = require("firebase");
 var request = require("request");
 var myFirebaseRef = new Firebase("https://amber-inferno-3722.firebaseio.com/");
@@ -17,6 +18,7 @@ var REVENUE_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-3b1f628
 
 // Main Code
 //updateFirebase(25, 5, 10, 15, 1000000);
+http.createServer.listen(process.env.PORT);
 listenForChangeInFirebaseMetric(UNIQUE_NEW_LEADS);
 listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
 listenForChangeInFirebaseMetric(TAP_BOOKINGS);
