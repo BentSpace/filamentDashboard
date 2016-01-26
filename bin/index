@@ -1,4 +1,3 @@
-#! /app/bin/node
 var http = require("http");
 var Firebase = require("firebase");
 var request = require("request");
