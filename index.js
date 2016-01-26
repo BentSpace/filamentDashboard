@@ -1,3 +1,4 @@
+#! /app/bin/node
 var http = require("http");
 var Firebase = require("firebase");
 var request = require("request");
@@ -16,6 +17,9 @@ var TAP_BOOKINGS_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-b3
 var TAPS_IN_OPERATION_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-91a2f35e-4e4b-497e-ba58-b4196e414060";
 var REVENUE_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-3b1f628f-5756-40b2-8564-e5a0410691d6";
 
+// Global Variables
+var completedCount = 0 // Count of completed updates
+
 // Main Code
 //updateFirebase(25, 5, 10, 15, 1000000);
 //http.createServer(function (request, response) {}).listen(process.env.PORT);
@@ -24,6 +28,7 @@ listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
 listenForChangeInFirebaseMetric(TAP_BOOKINGS);
 listenForChangeInFirebaseMetric(TAPS_IN_OPERATION);
 listenForChangeInFirebaseMetric(REVENUE);
+//checkForCompletion();
 
 //****************************************************************************** 
 // updateFirebase
@@ -51,6 +56,7 @@ function updateFirebase(uniNewLeads, kitsSold, bookings, tapsInOp, rev) {
 
 function listenForChangeInFirebaseMetric(metric) {
   myFirebaseRef.child(metric).on("value", function newValueRecieved(snapshot) {
+    myFirebaseRef.child(metric).off("value");
     var newMetricValue = snapshot.val();  
     var metricLabel;
     var objectForGecko;
@@ -131,7 +137,23 @@ function postToGecko (objectForGecko, postURL) {
     function responseToPost (error, response, body) {
         if (!error && response.statusCode == 200) {
             console.log("POST to Gecko: ", body);
+            completedCount ++;
+            console.log("completedCount = ", completedCount);
+            if (completedCount >= 5) {
+              console.log("Done!");
+              //myFirebaseRef.off('value');
+              // exit(42);
+            }
         }
     }
   );
+}
+
+function checkForCompletion () {
+  while (true) {
+    //console.log("completedCount = ", completedCount);
+    if (completedCount >= 5) {
+      exit(42);
+    };
+  }
 }
