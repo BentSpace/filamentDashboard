@@ -142,7 +142,7 @@ function postToGecko (objectForGecko, postURL) {
             if (completedCount >= 5) {
               console.log("Done!");
               //myFirebaseRef.off('value');
-              // exit(42);
+              process.exit();
             }
         }
     }
@@ -153,7 +153,7 @@ function checkForCompletion () {
   while (true) {
     //console.log("completedCount = ", completedCount);
     if (completedCount >= 5) {
-      exit(42);
+      process.exit();
     };
   }
 }
