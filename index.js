@@ -62,7 +62,7 @@ function listenForChangeInFirebaseMetric(metric) {
     var objectForGecko;
     var postURL;
 
-    console.log(metric + ": " + newMetricValue);
+    // console.log(metric + ": " + newMetricValue);
 
     metricLabelAndURL = findMetricLabelAndURL(metric);
     metricLabel = metricLabelAndURL[0];
@@ -136,11 +136,11 @@ function postToGecko (objectForGecko, postURL) {
     { json: objectForGecko },
     function responseToPost (error, response, body) {
         if (!error && response.statusCode == 200) {
-            console.log("POST to Gecko: ", body);
+            //console.log("POST to Gecko: ", body);
             completedCount ++;
-            console.log("completedCount = ", completedCount);
+            // console.log("completedCount = ", completedCount);
             if (completedCount >= 5) {
-              console.log("Done!");
+              //console.log("Done!");
               //myFirebaseRef.off('value');
               process.exit();
             }
