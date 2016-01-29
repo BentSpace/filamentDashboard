@@ -24,6 +24,10 @@ var NEW_LEADS_LAST_24_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/1747
 
 // Global Variables
 var completedCount = 0 // Count of completed updates
+var d = new Date();
+var currentTime = d.getTime()
+var oneDayInMilliseconds = 86400000;
+var leadsInLast24Hours = 0;
 
 // Main Code
 //updateFirebase(25, 5, 10, 15, 1000000);
@@ -33,6 +37,7 @@ listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
 listenForChangeInFirebaseMetric(TAP_BOOKINGS);
 listenForChangeInFirebaseMetric(TAPS_IN_OPERATION);
 listenForChangeInFirebaseMetric(REVENUE);
+updateNewLeadsInLast24Hours();
 //checkForCompletion();
 
 //****************************************************************************** 
@@ -163,7 +168,6 @@ function postToGecko (objectForGecko, postURL) {
 //******************************************************************************
 
 function updateNewLeadsInLast24Hours () {
-  var newMetricValue = snapshot.val();  
   var metricLabel;
   var objectForGecko;
   var postURL;
