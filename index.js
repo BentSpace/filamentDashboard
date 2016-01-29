@@ -4,6 +4,10 @@ var Firebase = require("firebase");
 var request = require("request");
 var myFirebaseRef = new Firebase("https://amber-inferno-3722.firebaseio.com/");
 
+//For Intercom API
+var Intercom = require('intercom-client');
+var client = new Intercom.Client('aya2xns2', 'b8c906c84711b31d7e6aa0af375899afe7b985ae');
+
 // Global Constants
 var UNIQUE_NEW_LEADS = "Filament Metrics/Unique New Leads";
 var EVAL_KITS_SOLD = "Filament Metrics/Eval Kits Sold";
@@ -16,6 +20,7 @@ var EVAL_KITS_SOLD_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-
 var TAP_BOOKINGS_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-b3182f88-c3f5-4b42-8b89-143691d67f8a";
 var TAPS_IN_OPERATION_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-91a2f35e-4e4b-497e-ba58-b4196e414060";
 var REVENUE_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-3b1f628f-5756-40b2-8564-e5a0410691d6";
+var NEW_LEADS_LAST_24_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-29f577d5-6536-4cc2-a53b-ba34ee9050af";
 
 // Global Variables
 var completedCount = 0 // Count of completed updates
@@ -90,6 +95,8 @@ function findMetricLabelAndURL (metric) {
       return ["Taps in Operation", TAPS_IN_OPERATION_GECKO_PUSH_URL];
     case REVENUE:
       return ["Revenue", REVENUE_GECKO_PUSH_URL];
+    case NEW_LEADS_LAST_24:
+      return ["New Leads in Last 24 Hours", NEW_LEADS_LAST_24_GECKO_PUSH_URL]
     default:
       console.error("ERROR in findMetricLabelAndURL: Unrecognized metric passed");
   }
@@ -149,11 +156,40 @@ function postToGecko (objectForGecko, postURL) {
   );
 }
 
-function checkForCompletion () {
-  while (true) {
-    //console.log("completedCount = ", completedCount);
-    if (completedCount >= 5) {
-      process.exit();
-    };
-  }
+//****************************************************************************** 
+// updateNewLeadsInLast24Hours
+//
+// Calculates # of new leads on Intercom and updates count of Geckoboard
+//******************************************************************************
+
+function updateNewLeadsInLast24Hours () {
+  var newMetricValue = snapshot.val();  
+  var metricLabel;
+  var objectForGecko;
+  var postURL;
+
+  client.leads.list(function leadsListReturned (err, response) {
+    if (err) {
+      console.error(err);
+    }
+    else {
+      var totalNumberOfLeads = response.body.contacts.length;
+      for (i = 0; i < totalNumberOfLeads; i++) {
+        var leadCreationTime = response.body.contacts[i].created_at * 1000;
+        var diffCreateAndCurrent = currentTime - leadCreationTime;
+        console.log("leadCreationTime: ", leadCreationTime);
+        console.log("Difference leadCreationTime: ", diffCreateAndCurrent);
+        if (diffCreateAndCurrent < oneDayInMilliseconds) {
+          console.log("Less Than 24 hours old");
+          leadsInLast24Hours++;
+        }
+      }
+      console.log("New Leads in Last 24 Hours:", leadsInLast24Hours);
+      metricLabelAndURL = findMetricLabelAndURL(NEW_LEADS_LAST_24);
+      metricLabel = metricLabelAndURL[0];
+      postURL = metricLabelAndURL[1];    
+      objectForGecko = createGeckoObject (leadsInLast24Hours, metricLabel);
+      postToGecko (objectForGecko, postURL);
+    }
+  });
 }
