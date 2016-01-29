@@ -151,7 +151,7 @@ function postToGecko (objectForGecko, postURL) {
             //console.log("POST to Gecko: ", body);
             completedCount ++;
             // console.log("completedCount = ", completedCount);
-            if (completedCount >= 5) {
+            if (completedCount >= 6) {
               //console.log("Done!");
               //myFirebaseRef.off('value');
               process.exit();
