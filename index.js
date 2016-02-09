@@ -149,16 +149,15 @@ function postToGecko (objectForGecko, postURL) {
     postURL,
     { json: objectForGecko },
     function responseToPost (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            //console.log("POST to Gecko: ", body);
-            completedCount ++;
-            // console.log("completedCount = ", completedCount);
-            if (completedCount >= 6) {
-              //console.log("Done!");
-              //myFirebaseRef.off('value');
-              process.exit();
-            }
+      if (error) {
+        console.error("Error in post to Gecko", error);
+      }
+      else {
+        completedCount ++;
+        if (completedCount >= 6) {
+          process.exit();
         }
+      }
     }
   );
 }
@@ -198,4 +197,55 @@ function updateNewLeadsInLast24Hours () {
       postToGecko (objectForGecko, postURL);
     }
   });
+}
+
+//*****************************************************************************= 
+// updateLeadMap
+//
+// updates the Lead map
+//*****************************************************************************=
+function updateLeadMap(){
+  var geckoTestMapObject = 
+    {
+      "api_key": GECKO_API_KEY,
+      "data": {
+        "points": {
+          "point": [
+            {
+              "city": {
+                "city_name": "London",
+                "country_code": "GB"
+              },
+              "size": 10
+            },
+            {
+              "city": {
+                "city_name": "San Francisco",
+                "country_code": "US",
+                "region_code": "CA"
+              }
+            },
+            {
+              "latitude": "22.2670",
+              "longitude": "114.1880",
+              "color": "d8f709"
+            },
+            {
+              "latitude": "-33.94336",
+              "longitude": "18.896484",
+              "size": 5
+            },
+            {
+              "host": "geckoboard.com",
+              "color": "77dd77",
+              "size": 6
+            },
+            {
+              "ip": "178.125.193.227"
+            }
+          ]
+        }
+      }
+    };
+  postToGecko (geckoTestMapObject, LEAD_MAP_URL);
 }
