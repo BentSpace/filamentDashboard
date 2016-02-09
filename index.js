@@ -1,4 +1,4 @@
-#! /app/bin/node
+// #! /app/bin/node
 var http = require("http");
 var Firebase = require("firebase");
 var request = require("request");
@@ -8,13 +8,15 @@ var myFirebaseRef = new Firebase("https://amber-inferno-3722.firebaseio.com/");
 var Intercom = require('intercom-client');
 var client = new Intercom.Client('aya2xns2', 'b8c906c84711b31d7e6aa0af375899afe7b985ae');
 
+// For Gecko API
+var GECKO_API_KEY = "019bc0313f1d94dd149ae145379f8266";
+
 // Global Constants
 var UNIQUE_NEW_LEADS = "Filament Metrics/Unique New Leads";
 var EVAL_KITS_SOLD = "Filament Metrics/Eval Kits Sold";
 var TAP_BOOKINGS = "Filament Metrics/Tap Bookings";
 var TAPS_IN_OPERATION = "Filament Metrics/Taps in Operation";
 var REVENUE = "Filament Metrics/Revenue";
-var GECKO_API_KEY = "019bc0313f1d94dd149ae145379f8266";
 var UNIQUE_NEW_LEADS_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-9a0b34f7-8339-4c4d-a61f-4702ea8941cd";
 var EVAL_KITS_SOLD_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-a65537dc-f494-4b4e-8955-bb51b965d19b";
 var TAP_BOOKINGS_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-b3182f88-c3f5-4b42-8b89-143691d67f8a";
@@ -174,7 +176,7 @@ function updateNewLeadsInLast24Hours () {
 
   client.leads.list(function leadsListReturned (err, response) {
     if (err) {
-      console.error(err);
+      console.error("Error in getting List of Leads:\n", err.body.errors);
     }
     else {
       var totalNumberOfLeads = response.body.contacts.length;
