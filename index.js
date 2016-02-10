@@ -17,6 +17,7 @@ var EVAL_KITS_SOLD = "Filament Metrics/Eval Kits Sold";
 var TAP_BOOKINGS = "Filament Metrics/Tap Bookings";
 var TAPS_IN_OPERATION = "Filament Metrics/Taps in Operation";
 var REVENUE = "Filament Metrics/Revenue";
+var NEW_LEADS_LAST_24 = "Filament Metrics/New Leads in Last 24 Hours";
 var UNIQUE_NEW_LEADS_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-9a0b34f7-8339-4c4d-a61f-4702ea8941cd";
 var EVAL_KITS_SOLD_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-a65537dc-f494-4b4e-8955-bb51b965d19b";
 var TAP_BOOKINGS_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-b3182f88-c3f5-4b42-8b89-143691d67f8a";
@@ -29,17 +30,31 @@ var completedCount = 0 // Count of completed updates
 var d = new Date();
 var currentTime = d.getTime()
 var oneDayInMilliseconds = 86400000;
-var leadsInLast24Hours = 0;
+var lastLeadsInLast24Hours;
+var trendTestArray =     
+  [
+    "38594",
+    "39957",
+    "35316",
+    "35913",
+    "36668",
+    "45660",
+    "42949",
+    "47949",
+  ];
+var newLead24TrendArray = []; // Array to hold past values of nnew leads
 
 // Main Code
 //updateFirebase(25, 5, 10, 15, 1000000);
 //http.createServer(function (request, response) {}).listen(process.env.PORT);
-listenForChangeInFirebaseMetric(UNIQUE_NEW_LEADS);
-listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
-listenForChangeInFirebaseMetric(TAP_BOOKINGS);
-listenForChangeInFirebaseMetric(TAPS_IN_OPERATION);
-listenForChangeInFirebaseMetric(REVENUE);
-updateNewLeadsInLast24Hours();
+
+// listenForChangeInFirebaseMetric(UNIQUE_NEW_LEADS);
+// listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
+// listenForChangeInFirebaseMetric(TAP_BOOKINGS);
+// listenForChangeInFirebaseMetric(TAPS_IN_OPERATION);
+// listenForChangeInFirebaseMetric(REVENUE);
+updateNewLeadsInLast24HoursTestFunction();
+
 //checkForCompletion();
 
 //****************************************************************************** 
@@ -79,7 +94,7 @@ function listenForChangeInFirebaseMetric(metric) {
     metricLabelAndURL = findMetricLabelAndURL(metric);
     metricLabel = metricLabelAndURL[0];
     postURL = metricLabelAndURL[1];    
-    objectForGecko = createGeckoObject (newMetricValue, metricLabel);
+    objectForGecko = createGeckoNumberTrendObject (newMetricValue, metricLabel);
     postToGecko (objectForGecko, postURL);
   });
 }
@@ -115,7 +130,7 @@ function findMetricLabelAndURL (metric) {
 // Create object to send to Geokoboard
 //******************************************************************************
 
-function createGeckoObject (newMetricValue, metricLabel) {
+function createGeckoNumberTrendObject (newMetricValue, metricLabel, trendArray) {
   var objectForGecko
   var prefix;
 
@@ -132,7 +147,8 @@ function createGeckoObject (newMetricValue, metricLabel) {
                                   "value": newMetricValue,
                                   "text": metricLabel,
                                   "prefix": prefix
-                                }
+                                },
+                                trendArray
                               ]
                             }
                           };
@@ -154,9 +170,9 @@ function postToGecko (objectForGecko, postURL) {
       }
       else {
         completedCount ++;
-        if (completedCount >= 6) {
-          process.exit();
-        }
+        // if (completedCount >= 6) {
+        //   process.exit();
+        // }
       }
     }
   );
@@ -172,6 +188,7 @@ function updateNewLeadsInLast24Hours () {
   var metricLabel;
   var objectForGecko;
   var postURL;
+  var leadsInLast24Hours = 0;
 
   client.leads.list(function leadsListReturned (err, response) {
     if (err) {
@@ -189,11 +206,14 @@ function updateNewLeadsInLast24Hours () {
           leadsInLast24Hours++;
         }
       }
+      if (leadsInLast24Hours != lastLeadsInLast24Hours) {
+        newLead24TrendArray.push(lastLeadsInLast24Hours.toString())
+      }
       console.log("New Leads in Last 24 Hours:", leadsInLast24Hours);
       metricLabelAndURL = findMetricLabelAndURL(NEW_LEADS_LAST_24);
       metricLabel = metricLabelAndURL[0];
       postURL = metricLabelAndURL[1];    
-      objectForGecko = createGeckoObject (leadsInLast24Hours, metricLabel);
+      objectForGecko = createGeckoNumberTrendObject (leadsInLast24Hours, metricLabel);
       postToGecko (objectForGecko, postURL);
     }
   });
@@ -248,4 +268,36 @@ function updateLeadMap(){
       }
     };
   postToGecko (geckoTestMapObject, LEAD_MAP_URL);
+}
+
+//****************************************************************************** 
+// updateNewLeadsInLast24HoursTestFunction
+//
+// Calculates # of new leads on Intercom and updates count of Geckoboard
+// Created for use without intercom link
+//******************************************************************************
+
+function updateNewLeadsInLast24HoursTestFunction () {
+  var metricLabel;
+  var objectForGecko;
+  var postURL;
+
+  myFirebaseRef.child(NEW_LEADS_LAST_24).on("value", function newValueRecieved(snapshot) {
+    var leadsInLast24Hours = snapshot.val();  
+    console.log(leadsInLast24Hours);
+    var metricLabel;
+    var objectForGecko;
+    var postURL;
+
+    if (leadsInLast24Hours != lastLeadsInLast24Hours && lastLeadsInLast24Hours != undefined) {
+      newLead24TrendArray.push(lastLeadsInLast24Hours.toString())
+    }
+    lastLeadsInLast24Hours = leadsInLast24Hours;
+    metricLabelAndURL = findMetricLabelAndURL(NEW_LEADS_LAST_24);
+    metricLabel = metricLabelAndURL[0];
+    postURL = metricLabelAndURL[1];    
+    objectForGecko = createGeckoNumberTrendObject (leadsInLast24Hours, metricLabel, newLead24TrendArray);
+    postToGecko (objectForGecko, postURL);
+    console.log("newLeads24TrendArray", newLead24TrendArray);
+  });
 }
