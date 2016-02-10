@@ -24,6 +24,7 @@ var TAP_BOOKINGS_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-b3
 var TAPS_IN_OPERATION_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-91a2f35e-4e4b-497e-ba58-b4196e414060";
 var REVENUE_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-3b1f628f-5756-40b2-8564-e5a0410691d6";
 var NEW_LEADS_LAST_24_GECKO_PUSH_URL = "https://push.geckoboard.com/v1/send/174778-29f577d5-6536-4cc2-a53b-ba34ee9050af";
+var LEAD_MAP_URL = "https://push.geckoboard.com/v1/send/174778-56aa3d39-248c-4fd6-ac46-2a86ed599881";
 
 // Global Variables
 var completedCount = 0 // Count of completed updates
@@ -53,7 +54,8 @@ var newLead24TrendArray = []; // Array to hold past values of nnew leads
 // listenForChangeInFirebaseMetric(TAP_BOOKINGS);
 // listenForChangeInFirebaseMetric(TAPS_IN_OPERATION);
 // listenForChangeInFirebaseMetric(REVENUE);
-updateNewLeadsInLast24HoursTestFunction();
+//updateNewLeadsInLast24HoursTestFunction();
+updateLeadMap();
 
 //checkForCompletion();
 
@@ -231,37 +233,62 @@ function updateLeadMap(){
       "data": {
         "points": {
           "point": [
+            // {
+            //   "city": {
+            //     "city_name": "London",
+            //     "country_code": "GB"
+            //   },
+            //   "size": 10
+            // },
+            // {
+            //   "city": {
+            //     "city_name": "London",
+            //     "country_code": "GB"
+            //   },
+            //   "size": 10
+            // },
+            // {
+            //   "city": {
+            //     "city_name": "San Francisco",
+            //     "country_code": "US",
+            //     "region_code": "CA"
+            //   }
+            // },
+            // {
+            //   "latitude": "22.2670",
+            //   "longitude": "114.1880",
+            //   "color": "d8f709"
+            // },
+            // {
+            //   "latitude": "-33.94336",
+            //   "longitude": "18.896484",
+            //   "size": 5
+            // },
+            // {
+            //   "host": "geckoboard.com",
+            //   "color": "77dd77",
+            //   "size": 6
+            // },
             {
-              "city": {
-                "city_name": "London",
-                "country_code": "GB"
-              },
-              "size": 10
+              "ip": "138.125.193.227"
             },
             {
-              "city": {
-                "city_name": "San Francisco",
-                "country_code": "US",
-                "region_code": "CA"
-              }
+              "ip": "178.123.193.227"
             },
             {
-              "latitude": "22.2670",
-              "longitude": "114.1880",
-              "color": "d8f709"
+              "ip": "233.125.234.227"
             },
             {
-              "latitude": "-33.94336",
-              "longitude": "18.896484",
-              "size": 5
+              "ip": "345.125.193.345"
             },
             {
-              "host": "geckoboard.com",
-              "color": "77dd77",
-              "size": 6
+              "ip": "567.125.193.227"
             },
             {
-              "ip": "178.125.193.227"
+              "ip": "234.678.193.227"
+            },
+            {
+              "ip": "745.125.978.227"
             }
           ]
         }
