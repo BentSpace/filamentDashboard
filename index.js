@@ -43,19 +43,25 @@ var trendTestArray =
     "42949",
     "47949",
   ];
-var newLead24TrendArray = []; // Array to hold past values of nnew leads
+var newLeads24TrendArray = []; // Array to hold past values of nnew leads
+var uniNewLeadsTrendArray = [];
+var evalKitsSoldTrendArray = [];
+var tapBookingsTrendArray = [];
+var tapsInOperationTrendArray = [];
+var revenueTrendArray = [];
 
 // Main Code
 //updateFirebase(25, 5, 10, 15, 1000000);
 //http.createServer(function (request, response) {}).listen(process.env.PORT);
 
-// listenForChangeInFirebaseMetric(UNIQUE_NEW_LEADS);
-// listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
-// listenForChangeInFirebaseMetric(TAP_BOOKINGS);
-// listenForChangeInFirebaseMetric(TAPS_IN_OPERATION);
-// listenForChangeInFirebaseMetric(REVENUE);
+listenForChangeInFirebaseMetric(UNIQUE_NEW_LEADS);
+listenForChangeInFirebaseMetric(EVAL_KITS_SOLD);
+listenForChangeInFirebaseMetric(TAP_BOOKINGS);
+listenForChangeInFirebaseMetric(TAPS_IN_OPERATION);
+listenForChangeInFirebaseMetric(REVENUE);
+listenForChangeInFirebaseMetric(NEW_LEADS_LAST_24 );
 //updateNewLeadsInLast24HoursTestFunction();
-updateLeadMap();
+//updateLeadMap();
 
 //checkForCompletion();
 
@@ -85,44 +91,50 @@ function updateFirebase(uniNewLeads, kitsSold, bookings, tapsInOp, rev) {
 
 function listenForChangeInFirebaseMetric(metric) {
   myFirebaseRef.child(metric).on("value", function newValueRecieved(snapshot) {
-    myFirebaseRef.child(metric).off("value");
+    //myFirebaseRef.child(metric).off("value");
     var newMetricValue = snapshot.val();  
     var metricLabel;
     var objectForGecko;
     var postURL;
+    var trendArray
 
     // console.log(metric + ": " + newMetricValue);
 
-    metricLabelAndURL = findMetricLabelAndURL(metric);
+    var metricLabelAndURL = findMetricLabelTrendArrayAndURL(metric);
+    // if (leadsInLast24Hours != lastLeadsInLast24Hours && lastLeadsInLast24Hours != undefined) {
+    //   newLeads24TrendArray.push(lastLeadsInLast24Hours.toString())
+    // }
     metricLabel = metricLabelAndURL[0];
-    postURL = metricLabelAndURL[1];    
-    objectForGecko = createGeckoNumberTrendObject (newMetricValue, metricLabel);
+    postURL = metricLabelAndURL[1];  
+    trendArray = metricLabelAndURL[2];  
+    objectForGecko = createGeckoNumberTrendObject (newMetricValue, metricLabel, trendArray);
+    trendArray.push(newMetricValue);
     postToGecko (objectForGecko, postURL);
   });
 }
 
 //****************************************************************************** 
-// findMetricLabelAndURL
+// findMetricLabelTrendArrayAndURL
 //
 // Set metric label and POST URL to match metric passed in
 //******************************************************************************
 
-function findMetricLabelAndURL (metric) {
+function findMetricLabelTrendArrayAndURL (metric) {
   switch(metric) {
     case UNIQUE_NEW_LEADS:
-      return ["Unique New Leads", UNIQUE_NEW_LEADS_GECKO_PUSH_URL];
+      return ["Unique New Leads", UNIQUE_NEW_LEADS_GECKO_PUSH_URL, uniNewLeadsTrendArray];
     case EVAL_KITS_SOLD:
-      return ["Eval Kits Sold", EVAL_KITS_SOLD_GECKO_PUSH_URL];
+      return ["Eval Kits Sold", EVAL_KITS_SOLD_GECKO_PUSH_URL, evalKitsSoldTrendArray];
     case TAP_BOOKINGS:
-      return ["Tap Bookings", TAP_BOOKINGS_GECKO_PUSH_URL];
+      return ["Tap Bookings", TAP_BOOKINGS_GECKO_PUSH_URL, tapBookingsTrendArray];
     case TAPS_IN_OPERATION:
-      return ["Taps in Operation", TAPS_IN_OPERATION_GECKO_PUSH_URL];
+      return ["Taps in Operation", TAPS_IN_OPERATION_GECKO_PUSH_URL, tapsInOperationTrendArray];
     case REVENUE:
-      return ["Revenue", REVENUE_GECKO_PUSH_URL];
+      return ["Revenue", REVENUE_GECKO_PUSH_URL, revenueTrendArray];
     case NEW_LEADS_LAST_24:
-      return ["New Leads in Last 24 Hours", NEW_LEADS_LAST_24_GECKO_PUSH_URL]
+      return ["New Leads in Last 24 Hours", NEW_LEADS_LAST_24_GECKO_PUSH_URL, newLeads24TrendArray]
     default:
-      console.error("ERROR in findMetricLabelAndURL: Unrecognized metric passed");
+      console.error("ERROR in findMetricLabelTrendArrayAndURL: Unrecognized metric passed");
   }
 }
 
@@ -209,10 +221,10 @@ function updateNewLeadsInLast24Hours () {
         }
       }
       if (leadsInLast24Hours != lastLeadsInLast24Hours) {
-        newLead24TrendArray.push(lastLeadsInLast24Hours.toString())
+        newLeads24sTrendArray.push(lastLeadsInLast24Hours.toString())
       }
       console.log("New Leads in Last 24 Hours:", leadsInLast24Hours);
-      metricLabelAndURL = findMetricLabelAndURL(NEW_LEADS_LAST_24);
+      metricLabelAndURL = findMetricLabelTrendArrayAndURL(NEW_LEADS_LAST_24);
       metricLabel = metricLabelAndURL[0];
       postURL = metricLabelAndURL[1];    
       objectForGecko = createGeckoNumberTrendObject (leadsInLast24Hours, metricLabel);
@@ -227,12 +239,29 @@ function updateNewLeadsInLast24Hours () {
 // updates the Lead map
 //*****************************************************************************=
 function updateLeadMap(){
+  var ips = [];
+  var i = 0, j = 0, k = 0, l = 0;
+  for (i = 0; i < 256; i++) {
+    //ips.push( {"ip": i.toString() + "." + j.toString() + "." + k.toString() + "." + l.toString()} ); 
+    for (j = 0; j < 256; j++) {
+      ips.push( {"ip": i.toString() + "." + j.toString() + "." + k.toString() + "." + l.toString()} ); 
+      //for (k = 0; k < 256; k++) {
+        //ips.push( {"ip": i.toString() + "." + j.toString() + "." + k.toString() + "." + l.toString()} ); 
+    //         for (l = 0; l < 256; l++) {
+    //           ips.push( {"ip": i.toString() + "." + j.toString() + "." + k.toString() + "." + l.toString()} ); 
+    //         }
+      
+    }
+  }
+
+  console.log(ips);
   var geckoTestMapObject = 
     {
       "api_key": GECKO_API_KEY,
       "data": {
         "points": {
-          "point": [
+          "point": ips
+
             // {
             //   "city": {
             //     "city_name": "London",
@@ -269,28 +298,23 @@ function updateLeadMap(){
             //   "color": "77dd77",
             //   "size": 6
             // },
-            {
-              "ip": "138.125.193.227"
-            },
-            {
-              "ip": "178.123.193.227"
-            },
-            {
-              "ip": "233.125.234.227"
-            },
-            {
-              "ip": "345.125.193.345"
-            },
-            {
-              "ip": "567.125.193.227"
-            },
-            {
-              "ip": "234.678.193.227"
-            },
-            {
-              "ip": "745.125.978.227"
-            }
-          ]
+
+          //   {
+          //     "ip": "1.0.0.0"
+          //   },
+          //   {
+          //     "ip": "2.0.0.0"
+          //   },
+          //   {
+          //     "ip": "3.0.0.0"
+          //   },
+          //   {
+          //     "ip": "4.0.0.0"
+          //   },
+          //   {
+          //     "ip": "5.0.0.0"
+          //   }
+          // ]
         }
       }
     };
@@ -317,14 +341,14 @@ function updateNewLeadsInLast24HoursTestFunction () {
     var postURL;
 
     if (leadsInLast24Hours != lastLeadsInLast24Hours && lastLeadsInLast24Hours != undefined) {
-      newLead24TrendArray.push(lastLeadsInLast24Hours.toString())
+      newLeads24TrendArray.push(lastLeadsInLast24Hours.toString())
     }
     lastLeadsInLast24Hours = leadsInLast24Hours;
-    metricLabelAndURL = findMetricLabelAndURL(NEW_LEADS_LAST_24);
+    metricLabelAndURL = findMetricLabelTrendArrayAndURL(NEW_LEADS_LAST_24);
     metricLabel = metricLabelAndURL[0];
     postURL = metricLabelAndURL[1];    
-    objectForGecko = createGeckoNumberTrendObject (leadsInLast24Hours, metricLabel, newLead24TrendArray);
+    objectForGecko = createGeckoNumberTrendObject (leadsInLast24Hours, metricLabel, newLeads24TrendArray);
     postToGecko (objectForGecko, postURL);
-    console.log("newLeads24TrendArray", newLead24TrendArray);
+    console.log("newLeads24TrendArray", newLeads24TrendArray);
   });
 }
