@@ -108,8 +108,8 @@ function listenForChangeInFirebaseMetric(metric) {
     postURL = metricLabelAndURL[1];  
     trendArray = metricLabelAndURL[2];  
     objectForGecko = createGeckoNumberTrendObject (newMetricValue, metricLabel, trendArray);
-    trendArray.push(newMetricValue);
     postToGecko (objectForGecko, postURL);
+    trendArray.push(newMetricValue);
   });
 }
 
